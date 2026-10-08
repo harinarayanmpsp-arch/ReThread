@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ReThread — Give Clothes a Second Chance</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f6f7f5;
+    color: #222;
+}
+
+header {
+    background: #ffffff;
+    border-bottom: 1px solid #ddd;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar {
+    max-width: 1200px;
+    margin: auto;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: #176b4d;
+}
+
+.logo span {
+    color: #222;
+}
+
+nav {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+nav button {
+    border: none;
+    background: transparent;
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 15px;
+    border-radius: 8px;
+}
+
+nav button:hover {
+    background: #eaf4ef;
+}
+
+.cart {
+    background: #176b4d !important;
+    color: white !important;
+}
+
+main {
+    max-width: 1200px;
+    margin: auto;
+    padding: 25px 20px;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.hero {
+    min-height: 400px;
+    border-radius: 18px;
+    padding: 55px;
+    display: flex;
+    align-items: center;
+    background:
+        linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.45)),
+        url("https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1400&q=80")
+        center/cover;
+    color: white;
+}
+
+.hero-content {
+    max-width: 650px;
+}
+
+.hero h1 {
+    font-size: 52px;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    font-size: 20px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.btn {
+    border: none;
+    padding: 13px 20px;
+    border-radius: 9px;
+    cursor: pointer;
+    background: #176b4d;
+    color: white;
+    font-size: 15px;
+}
+
+.btn:hover {
+    opacity: .9;
+}
+
+.btn.light {
+    background: white;
+    color: #176b4d;
+}
+
+.section-title {
+    margin: 45px 0 20px;
+    font-size: 30px;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.feature {
+    background: white;
+    padding: 25px;
+    border-radius: 14px;
+    text-align: center;
+    border: 1px solid #e1e1e1;
+}
+
+.feature-icon {
+    font-size: 35px;
+    margin-bottom: 10px;
+}
+
+.feature h3 {
+    margin-bottom: 8px;
+}
+
+.feature p {
+    color: #666;
+    line-height: 1.5;
+}
+
+.search-area {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.search-area input {
+    flex: 1;
+    padding: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+select {
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: white;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.product {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #e1e1e1;
+    transition: .2s;
+}
+
+.product:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,.08);
+}
+
+.product img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 16px;
+}
+
+.product-info h3 {
+    margin-bottom: 8px;
+}
+
+.price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #176b4d;
+    margin: 8px 0;
+}
+
+.condition {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.product-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.product-actions button {
+    flex: 1;
+}
+
+.save {
+    background: #eee;
+    color: #222;
+}
+
+form {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    max-width: 700px;
+    border: 1px solid #ddd;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.info-box {
+    background: #eaf4ef;
+    border-left: 5px solid #176b4d;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    line-height: 1.6;
+}
+
+.orders {
+    display: grid;
+    gap: 15px;
+}
+
+.order {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+}
+
+.order strong {
+    color: #176b4d;
+}
+
+.profile {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 25px;
+}
+
+.profile-card,
+.profile-content {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid #ddd;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #dceee5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 45px;
+    margin: auto auto 15px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.stat {
+    background: #f6f7f5;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.stat strong {
+    display: block;
+    font-size: 25px;
+    color: #176b4d;
+}
+
+.recreate-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.recreate-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+
+.recreate-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.recreate-card div {
+    padding: 18px;
+}
+
+footer {
+    margin-top: 50px;
+    background: #163b2e;
+    color: white;
+    padding: 40px 20px;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 30px;
+}
+
+footer h2 {
+    margin-bottom: 10px;
+}
+
+footer p {
+    color: #d8e7df;
+    line-height: 1.6;
+}
+
+@media(max-width: 900px) {
+    .products {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .features {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .recreate-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media(max-width: 650px) {
+    .navbar {
+        flex-direction: column;
+    }
+
+    nav {
+        justify-content: center;
+    }
+
+    .hero {
+        padding: 35px 25px;
+        min-height: 350px;
+    }
+
+    .hero h1 {
+        font-size: 38px;
+    }
+
+    .products,
+    .features,
+    .recreate-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .search-area {
+        flex-direction: column;
+    }
+
+    .profile {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="navbar">
+
+        <div class="logo">
+            Re<span>Thread</span>
+        </div>
+
+        <nav>
+            <button onclick="showPage('home')">Home</button>
+            <button onclick="showPage('shop')">Shop</button>
+            <button onclick="showPage('sell')">Sell</button>
+            <button onclick="showPage('orders')">Orders</button>
+            <button onclick="showPage('recreate')">Recreate</button>
+            <button onclick="showPage('profile')">Profile</button>
+            <button class="cart" onclick="showCart()">
+                🛒 Cart (<span id="cartCount">0</span>)
+            </button>
+        </nav>
+
+    </div>
+</header>
+
+
+<main>
+
+<!-- HOME -->
+
+<section id="home" class="page active">
+
+    <div class="hero">
+
+        <div class="hero-content">
+
+            <h1>Give Clothes a Second Chance.</h1>
+
+            <p>
+                Welcome to ReThread — a marketplace for buying,
+                selling, swapping and recreating pre-loved clothing.
+            </p>
+
+            <button class="btn light" onclick="showPage('shop')">
+                Shop Now
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <h2 class="section-title">
+        Why ReThread?
+    </h2>
+
+    <div class="features">
+
+        <div class="feature">
+            <div class="feature-icon">♻️</div>
+            <h3>Sustainable</h3>
+            <p>
+                Give unwanted clothes a longer life and help reduce waste.
+            </p>
+        </div>
+
+        <div class="feature">
+            <div class="feature-icon">💰</div>
+            <h3>Affordable</h3>
+            <p>
+                Discover good clothing at more affordable prices.
+            </p>
+        </div>
+
+        <div class="feature">
+            <div class="feature-icon">👕</div>
+            <h3>Pre-Loved Fashion</h3>
+            <p>
+                Find unique clothes that deserve another owner.
+            </p>
+        </div>
+
+        <div class="feature">
+            <div class="feature-icon">🧵</div>
+            <h3>Recreate</h3>
+            <p>
+                Turn unsuitable clothing into useful new products.
+            </p>
+        </div>
+
+    </div>
+
+
+    <h2 class="section-title">
+        How ReThread Works
+    </h2>
+
+    <div class="info-box">
+
+        <strong>1. Discover</strong> — Browse pre-loved clothing.
+
+        <br><br>
+
+        <strong>2. Buy</strong> — Choose something you love.
+
+        <br><br>
+
+        <strong>3. Sell</strong> — Give your unused clothes a new owner.
+
+        <br><br>
+
+        <strong>4. Swap</strong> — Exchange clothes instead of buying new ones.
+
+        <br><br>
+
+        <strong>5. Recreate</strong> — Transform old clothes into something useful.
+
+    </div>
+
+</section>
+
+
+
+<!-- SHOP -->
+
+<section id="shop" class="page">
+
+    <h1>Shop Pre-Loved Fashion</h1>
+
+    <p style="margin-top:10px;color:#666;">
+        Discover clothes ready for their next chapter.
+    </p>
+
+    <div class="search-area">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search clothes..."
+            oninput="renderProducts()"
+        >
+
+        <select id="categoryFilter" onchange="renderProducts()">
+
+            <option value="All">All Categories</option>
+            <option value="Jackets">Jackets</option>
+            <option value="T-Shirts">T-Shirts</option>
+            <option value="Jeans">Jeans</option>
+            <option value="Shirts">Shirts</option>
+            <option value="Dresses">Dresses</option>
+
+        </select>
+
+        <select id="sortFilter" onchange="renderProducts()">
+
+            <option value="default">Sort By</option>
+            <option value="low">Price: Low to High</option>
+            <option value="high">Price: High to Low</option>
+
+        </select>
+
+    </div>
+
+    <div id="products" class="products"></div>
+
+</section>
+
+
+
+<!-- SELL -->
+
+<section id="sell" class="page">
+
+    <h1>Sell Your Clothes</h1>
+
+    <p style="margin:10px 0 20px;color:#666;">
+        Give your unused clothing a new owner.
+    </p>
+
+    <form id="sellForm">
+
+        <div class="form-group">
+
+            <label>Item Name</label>
+
+            <input
+                type="text"
+                id="itemName"
+                placeholder="Example: Denim Jacket"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Price (₹)</label>
+
+            <input
+                type="number"
+                id="itemPrice"
+                placeholder="650"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Category</label>
+
+            <select id="itemCategory">
+
+                <option>Jackets</option>
+                <option>T-Shirts</option>
+                <option>Jeans</option>
+                <option>Shirts</option>
+                <option>Dresses</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Condition</label>
+
+            <select id="itemCondition">
+
+                <option>Like New</option>
+                <option>Excellent</option>
+                <option>Good</option>
+                <option>Used</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Image URL</label>
+
+            <input
+                type="url"
+                id="itemImage"
+                placeholder="Paste an image URL"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Description</label>
+
+            <textarea
+                id="itemDescription"
+                placeholder="Describe your clothing..."
+                required
+            ></textarea>
+
+        </div>
+
+
+        <button class="btn" type="submit">
+            List My Item
+        </button>
+
+    </form>
+
+</section>
+
+
+
+<!-- ORDERS -->
+
+<section id="orders" class="page">
+
+    <h1>My Orders</h1>
+
+    <p style="margin:10px 0 20px;color:#666;">
+        View your recent ReThread purchases.
+    </p>
+
+    <div id="ordersList" class="orders"></div>
+
+</section>
+
+
+
+<!-- RECREATE -->
+
+<section id="recreate" class="page">
+
+    <h1>Recreate — Turn Old Into New</h1>
+
+    <p style="margin:10px 0 25px;color:#666;">
+        Not every piece of clothing has to become waste.
+        Give old fabric a new purpose.
+    </p>
+
+
+    <div class="recreate-grid">
+
+        <div class="recreate-card">
+
+            <img src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=800&q=80">
+
+            <div>
+
+                <h3>Tote Bags</h3>
+
+                <p>
+                    Turn old clothing into reusable shopping bags.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="recreate-card">
+
+            <img src="https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&w=800&q=80">
+
+            <div>
+
+                <h3>Upcycled Accessories</h3>
+
+                <p>
+                    Transform unused fabric into creative accessories.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="recreate-card">
+
+            <img src="https://images.unsplash.com/photo-1583845112203-454c7f4c2c3d?auto=format&fit=crop&w=800&q=80">
+
+            <div>
+
+                <h3>Home Products</h3>
+
+                <p>
+                    Create useful products such as cushion covers.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="info-box">
+
+        <strong>Our idea:</strong>
+
+        Clothing that cannot be resold can still have value.
+
+        Instead of throwing it away, ReThread can help transform
+        it into something new.
+
+    </div>
+
+</section>
+
+
+
+<!-- PROFILE -->
+
+<section id="profile" class="page">
+
+    <h1>My Profile</h1>
+
+    <br>
+
+    <div class="profile">
+
+        <div class="profile-card">
+
+            <div class="profile-avatar">
+                👤
+            </div>
+
+            <h2 style="text-align:center;">
+                ReThread User
+            </h2>
+
+            <p style="text-align:center;color:#666;">
+                Sustainable Fashion Lover
+            </p>
+
+        </div>
+
+
+        <div class="profile-content">
+
+            <h2>My ReThread Activity</h2>
+
+            <div class="stats">
+
+                <div class="stat">
+
+                    <strong id="savedCount">
+                        0
+                    </strong>
+
+                    Saved
+
+                </div>
+
+
+                <div class="stat">
+
+                    <strong id="listingCount">
+                        0
+                    </strong>
+
+                    Listings
+
+                </div>
+
+
+                <div class="stat">
+
+                    <strong id="orderCount">
+                        0
+                    </strong>
+
+                    Orders
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+
+<footer>
+
+    <div class="footer-content">
+
+        <div>
+
+            <h2>ReThread</h2>
+
+            <p>
+                Give clothes a second chance.
+                Buy, sell, swap and recreate pre-loved fashion.
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <h3>Explore</h3>
+
+            <br>
+
+            <p>Shop</p>
+            <p>Sell</p>
+            <p>Swap</p>
+            <p>Recreate</p>
+
+        </div>
+
+
+        <div>
+
+            <h3>Our Mission</h3>
+
+            <br>
+
+            <p>
+                Making fashion more circular,
+                affordable and sustainable.
+            </p>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+
+<script>
+
+let products = [
+
+    {
+        id: 1,
+        name: "Classic Denim Jacket",
+        price: 650,
+        category: "Jackets",
+        condition: "Like New",
+        image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=80",
+        description: "Classic blue denim jacket in excellent style."
+    },
+
+    {
+        id: 2,
+        name: "Cotton White T-Shirt",
+        price: 250,
+        category: "T-Shirts",
+        condition: "Good",
+        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
+        description: "Comfortable cotton white T-shirt."
+    },
+
+    {
+        id: 3,
+        name: "Blue Straight Jeans",
+        price: 550,
+        category: "Jeans",
+        condition: "Used",
+        image: "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=800&q=80",
+        description: "Classic blue straight-fit jeans in used condition."
+    },
+
+    {
+        id: 4,
+        name: "Casual Checked Shirt",
+        price: 350,
+        category: "Shirts",
+        condition: "Like New",
+        image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=800&q=80",
+        description: "Comfortable casual checked shirt."
+    },
+
+    {
+        id: 5,
+        name: "Floral Summer Dress",
+        price: 700,
+        category: "Dresses",
+        condition: "Excellent",
+        image: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80",
+        description: "Beautiful floral summer dress."
+    }
+
+];
+
+
+let cart = [];
+
+let saved = [];
+
+let orders = [];
+
+
+
+function showPage(page) {
+
+    document.querySelectorAll(".page").forEach(function(section) {
+
+        section.classList.remove("active");
+
+    });
+
+    document.getElementById(page).classList.add("active");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+    if(page === "shop") {
+
+        renderProducts();
+
+    }
+
+    if(page === "orders") {
+
+        renderOrders();
+
+    }
+
+    updateProfile();
+
+}
+
+
+
+function renderProducts() {
+
+    let container = document.getElementById("products");
+
+    let search =
+        document.getElementById("searchInput").value.toLowerCase();
+
+    let category =
+        document.getElementById("categoryFilter").value;
+
+    let sort =
+        document.getElementById("sortFilter").value;
+
+
+    let filtered = products.filter(function(product) {
+
+        let matchesSearch =
+            product.name.toLowerCase().includes(search);
+
+        let matchesCategory =
+            category === "All" ||
+            product.category === category;
+
+        return matchesSearch && matchesCategory;
+
+    });
+
+
+    if(sort === "low") {
+
+        filtered.sort(function(a,b) {
+            return a.price - b.price;
+        });
+
+    }
+
+    if(sort === "high") {
+
+        filtered.sort(function(a,b) {
+            return b.price - a.price;
+        });
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    if(filtered.length === 0) {
+
+        container.innerHTML =
+            "<p>No products found.</p>";
+
+        return;
+
+    }
+
+
+    filtered.forEach(function(product) {
+
+        let card = document.createElement("div");
+
+        card.className = "product";
+
+
+        card.innerHTML = `
+
+            <img src="${product.image}" alt="${product.name}">
+
+            <div class="product-info">
+
+                <h3>${product.name}</h3>
+
+                <div class="condition">
+                    ${product.condition}
+                </div>
+
+                <div class="price">
+                    ₹${product.price}
+                </div>
+
+                <p style="color:#666;margin-bottom:12px;">
+                    ${product.description}
+                </p>
+
+                <div class="product-actions">
+
+                    <button
+                        class="btn"
+                        onclick="addToCart(${product.id})">
+                        Add to Cart
+                    </button>
+
+                    <button
+                        class="btn save"
+                        onclick="saveProduct(${product.id})">
+                        ♡
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+
+        container.appendChild(card);
+
+    });
+
+}
+
+
+
+function addToCart(id) {
+
+    let product =
+        products.find(function(p) {
+            return p.id === id;
+        });
+
+
+    cart.push(product);
+
+    updateCart();
+
+    alert(product.name + " added to cart!");
+
+}
+
+
+
+function updateCart() {
+
+    document.getElementById("cartCount").textContent =
+        cart.length;
+
+}
+
+
+
+function showCart() {
+
+    if(cart.length === 0) {
+
+        alert("Your cart is empty.");
+
+        return;
+
+    }
+
+
+    let total = cart.reduce(function(sum, item) {
+
+        return sum + Number(item.price);
+
+    }, 0);
+
+
+    let message =
+        "Your ReThread Cart\n\n";
+
+
+    cart.forEach(function(item, index) {
+
+        message +=
+            (index + 1) +
+            ". " +
+            item.name +
+            " — ₹" +
+            item.price +
+            "\n";
+
+    });
+
+
+    message +=
+        "\nTotal: ₹" +
+        total +
+        "\n\n";
+
+    message +=
+        "This is currently a demo checkout.";
+
+
+    let checkout =
+        confirm(message + "\n\nPlace demo order?");
+
+
+    if(checkout) {
+
+        orders.push({
+
+            id:
+                "RT" +
+                Math.floor(Math.random() * 100000),
+
+            items: [...cart],
+
+            total: total,
+
+            status: "Order Placed"
+
+        });
+
+
+        cart = [];
+
+        updateCart();
+
+        updateProfile();
+
+        alert(
+            "Your demo order has been placed successfully!"
+        );
+
+        showPage("orders");
+
+    }
+
+}
+
+
+
+function saveProduct(id) {
+
+    if(!saved.includes(id)) {
+
+        saved.push(id);
+
+        alert("Product saved to wishlist.");
+
+    } else {
+
+        alert("Product is already saved.");
+
+    }
+
+    updateProfile();
+
+}
+
+
+
+function updateProfile() {
+
+    document.getElementById("savedCount").textContent =
+        saved.length;
+
+    document.getElementById("listingCount").textContent =
+        Math.max(0, products.length - 5);
+
+    document.getElementById("orderCount").textContent =
+        orders.length;
+
+}
+
+
+
+function renderOrders() {
+
+    let container =
+        document.getElementById("ordersList");
+
+
+    container.innerHTML = "";
+
+
+    if(orders.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="info-box">
+
+                You don't have any orders yet.
+
+                <br><br>
+
+                Visit the Shop and discover something you like.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    orders.forEach(function(order) {
+
+        let itemNames =
+            order.items
+                .map(function(item) {
+                    return item.name;
+                })
+                .join(", ");
+
+
+        let div =
+            document.createElement("div");
+
+
+        div.className = "order";
+
+
+        div.innerHTML = `
+
+            <h3>
+                Order #${order.id}
+            </h3>
+
+            <p style="margin:10px 0;">
+                Items: ${itemNames}
+            </p>
+
+            <p>
+                Total:
+                <strong>
+                    ₹${order.total}
+                </strong>
+            </p>
+
+            <p style="margin-top:8px;">
+                Status:
+                <strong>
+                    ${order.status}
+                </strong>
+            </p>
+
+        `;
+
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+
+document
+    .getElementById("sellForm")
+    .addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+
+        let newProduct = {
+
+            id:
+                Date.now(),
+
+            name:
+                document.getElementById("itemName").value,
+
+            price:
+                Number(
+                    document.getElementById("itemPrice").value
+                ),
+
+            category:
+                document.getElementById("itemCategory").value,
+
+            condition:
+                document.getElementById("itemCondition").value,
+
+            image:
+                document.getElementById("itemImage").value,
+
+            description:
+                document.getElementById("itemDescription").value
+
+        };
+
+
+        products.push(newProduct);
+
+
+        this.reset();
+
+
+        alert(
+            "Your item has been listed on ReThread!"
+        );
+
+
+        updateProfile();
+
+        showPage("shop");
+
+    });
+
+
+
+renderProducts();
+
+updateCart();
+
+updateProfile();
+
+</script>
+
+</body>
+</html>
